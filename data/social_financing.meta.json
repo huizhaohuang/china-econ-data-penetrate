@@ -1,0 +1,17 @@
+{
+  "indicator_id": "social_financing",
+  "source": "People's Bank of China",
+  "source_detail": "PBOC monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_shrzgm",
+  "unit": "RMB 100 million (monthly increment)",
+  "fetched_at_utc": "2026-07-07T12:59:22Z",
+  "rows": 136,
+  "first_period": "2015-01",
+  "latest_period": "2026-04",
+  "columns": [
+    "date",
+    "value",
+    "rmb_loans"
+  ],
+  "notes": "Total social financing monthly increment ('value') and its new RMB loan component ('rmb_loans'). A flow, not a stock: read against prior months and the year-earlier month. Heavily seasonal, with a large January print each year. Stock yoy is not in this feed."
+}

@@ -1,0 +1,21 @@
+{
+  "indicator_id": "fiscal_revenue",
+  "source": "Ministry of Finance",
+  "source_detail": "MOF monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_czsr",
+  "unit": "RMB 100 million",
+  "fetched_at_utc": "2026-07-06T23:22:57Z",
+  "rows": 213,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "General public budget revenue. Read by year-to-date yoy. January and February are published combined. Budget expenditure and the bond-issuance-vs-quota view are tracked separately (planned)."
+}

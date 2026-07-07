@@ -1,0 +1,5 @@
+# Dependencies for the local data-fetching scripts (fetch/).
+# Run these from a China-reachable network (akshare endpoints are
+# unreliable from non-China IPs); the app itself never needs akshare.
+-r requirements.txt
+akshare>=1.18

@@ -1,0 +1,21 @@
+{
+  "indicator_id": "new_loans",
+  "source": "People's Bank of China",
+  "source_detail": "PBOC monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_new_financial_credit",
+  "unit": "RMB 100 million",
+  "fetched_at_utc": "2026-07-06T23:22:59Z",
+  "rows": 221,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "Aggregate new RMB loans to the real economy. The corporate medium-and-long-term loan breakdown is not available in the free feed. Single-month values are volatile and heavily seasonal; read the year-to-date total and cross-read with total social financing."
+}

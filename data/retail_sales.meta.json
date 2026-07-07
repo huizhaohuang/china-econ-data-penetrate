@@ -1,0 +1,21 @@
+{
+  "indicator_id": "retail_sales",
+  "source": "National Bureau of Statistics",
+  "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_consumer_goods_retail",
+  "unit": "RMB 100 million",
+  "fetched_at_utc": "2026-07-06T23:22:55Z",
+  "rows": 206,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "January and February are published combined by NBS: February rows flagged jan_feb_combined carry only ytd_value/ytd_yoy (covering Jan-Feb together); value, yoy and the following March mom are intentionally empty for those periods."
+}

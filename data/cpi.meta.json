@@ -1,0 +1,21 @@
+{
+  "indicator_id": "cpi",
+  "source": "National Bureau of Statistics",
+  "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_cpi",
+  "unit": "index (prior-year month = 100)",
+  "fetched_at_utc": "2026-07-06T23:23:00Z",
+  "rows": 221,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "National CPI. Read by year-on-year rate. 'value' is the price index (prior-year month = 100); yoy restates it as a percentage change. Published for January and February separately (no combined-month gap)."
+}

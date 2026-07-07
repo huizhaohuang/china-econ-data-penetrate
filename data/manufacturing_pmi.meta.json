@@ -1,0 +1,17 @@
+{
+  "indicator_id": "manufacturing_pmi",
+  "source": "National Bureau of Statistics",
+  "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_pmi",
+  "unit": "diffusion index (50 = no change)",
+  "fetched_at_utc": "2026-07-06T23:23:02Z",
+  "rows": 222,
+  "first_period": "2008-01",
+  "latest_period": "2026-06",
+  "columns": [
+    "date",
+    "value",
+    "nonmfg"
+  ],
+  "notes": "Manufacturing PMI ('value') and non-manufacturing PMI ('nonmfg'), both diffusion indices read against the 50 expansion/contraction line. Released on the last day of the reference month, ahead of the hard activity data."
+}

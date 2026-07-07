@@ -1,0 +1,21 @@
+{
+  "indicator_id": "ppi",
+  "source": "National Bureau of Statistics",
+  "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_ppi",
+  "unit": "index (prior-year month = 100)",
+  "fetched_at_utc": "2026-07-06T23:23:01Z",
+  "rows": 245,
+  "first_period": "2006-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "Producer price index (factory-gate prices). Read by year-on-year rate; sustained negative readings signal industrial deflation. 'value' is the price index (prior-year month = 100)."
+}

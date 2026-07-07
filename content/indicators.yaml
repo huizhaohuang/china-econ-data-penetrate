@@ -1,0 +1,778 @@
+# Explanation + display layer for the dashboard. Hand-editable.
+#
+# blocks:      the five sections of the GDP-expenditure tracking framework.
+#              `planned` lists indicators shown as muted placeholders but not
+#              yet fetched (either roadmap items or series not in the free feed).
+# indicators:  one card per built indicator, keyed by the CSV stem in data/.
+#
+#   metric:    drives the charts and tiles (so the app is data-driven):
+#     overview: the overview tile - col (headline column), kind
+#               (pct|index|trillion|usd_bn), period_label, up_is
+#               (good|bad|neutral, drives direction colour), optional
+#               combined_col/combined_label (used when the newest row is a
+#               Jan-Feb combined print), level_col/level_kind (secondary line),
+#               spark_col (sparkline column), cadence.
+#     views:    the block-page view selector - each a labelled column with a
+#               suffix, decimals, whether to draw a zero line, an optional
+#               scale divisor, and a reading note.
+#     compare:  columns the compare view can overlay - yoy_col (like-for-like
+#               rates) and level_col (indexed to 100).
+#
+#   cross_reads: a core feature - which other indicators to read alongside,
+#               and why. Rendered as links once the target is built.
+
+blocks:
+  consumption:
+    title: Household consumption
+    order: 1
+    description: >
+      How much are Chinese households spending? Monthly official gauges of
+      goods and services consumption — close to two-fifths of GDP, an
+      unusually low share by international standards, and the centre of the
+      "boosting domestic demand" policy debate.
+    planned:
+      - Services production index (NBS)
+
+  fiscal:
+    title: Government & fiscal
+    order: 2
+    description: >
+      How hard is fiscal policy actually pushing? Budget revenue, and — as they
+      are built — the pace of spending and of government bond issuance against
+      the annual quota: the execution speed of fiscal stimulus, not just its
+      announced size.
+    planned:
+      - Budget expenditure (MOF)
+      - Government bond net issuance vs annual quota (MOF / ChinaBond)
+      - Tax revenue, quarterly (MOF)
+
+  investment:
+    title: Investment
+    order: 3
+    description: >
+      Where is capital spending going — manufacturing, infrastructure or
+      property? Fixed asset investment, read alongside the credit and survey
+      indicators that lead it.
+    planned:
+      - FAI sector breakdown - manufacturing / infrastructure / real estate (NBS)
+      - Construction PMI, civil engineering sub-index (NBS)
+
+  trade:
+    title: External trade
+    order: 4
+    description: >
+      Is external demand holding up? Customs export and import flows, with the
+      manufacturing PMI as the survey signal that moves ahead of them.
+    planned:
+      - Manufacturing PMI new export orders sub-index (NBS)
+
+  crosscutting:
+    title: Prices, property & credit
+    order: 5
+    description: >
+      The cross-cutting layer behind all four demand blocks: deflation
+      pressure, the flow of credit into the economy, and the money behind it.
+    planned:
+      - 70-city new home prices (NBS)
+      - Real estate sales & development investment (NBS)
+
+indicators:
+
+  retail_sales:
+    name: Retail sales of consumer goods
+    block: consumption
+    publisher: National Bureau of Statistics (NBS)
+    source_line: "Source: National Bureau of Statistics via akshare"
+    unit: RMB 100 million, nominal
+    release: >
+      Monthly, around the 15th–18th of the following month, released alongside
+      industrial output and fixed asset investment. January and February are
+      released combined in mid-March.
+    what_it_measures: >
+      The headline gauge of Chinese consumer spending on goods: the value of
+      goods sold to households and social institutions by retailers,
+      wholesalers, caterers and online platforms, in nominal terms. It covers
+      goods and catering but not services such as travel, education, health
+      care or rent — an increasingly important blind spot as Chinese
+      consumption shifts toward services.
+    how_to_read: >
+      The single-month year-on-year rate is the headline number. Figures are
+      nominal: real volume growth is roughly the printed rate minus consumer
+      price inflation, so real growth exceeds the headline only when prices
+      are actually falling — check it against CPI. Distortions to watch: base
+      effects from lockdown years (2020, 2022), the timing of Chinese New
+      Year, and goods trade-in subsidy programmes, which pull durable-goods
+      purchases forward and flatter the headline while they run (and depress
+      it when they lapse).
+    caveats: >
+      NBS publishes January and February combined to strip out Chinese New
+      Year timing: those months have no single-month reading and charts show
+      a gap by design; use the combined January–February year-to-date rate
+      instead. Never interpolate across the gap.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: YoY
+        up_is: good
+        combined_col: ytd_yoy
+        combined_label: "YoY, Jan–Feb combined"
+        level_col: value
+        level_kind: trillion
+      views:
+        - label: Year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: >
+            Change on the same month a year earlier, nominal. The gap at the
+            start of each year (from 2012 onward) is deliberate: NBS publishes
+            January and February combined — switch to the year-to-date view for
+            the combined reading.
+        - label: Year-to-date year-on-year
+          col: ytd_yoy
+          suffix: "%"
+          zero: true
+          note: >
+            Cumulative growth since January versus the same period a year
+            earlier. The February point covers January–February combined.
+        - label: Monthly level
+          col: value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: >
+            Monthly value in RMB trillion, converted from the official unit of
+            RMB 100 million. January and February show no single-month value
+            because NBS publishes them combined.
+      compare:
+        yoy_col: yoy
+        level_col: value
+    cross_reads:
+      - id: services_production_index
+        name: Services production index
+        note: >
+          Retail sales capture goods and catering only; the services production
+          index is the monthly proxy for the rest of services consumption. Read
+          the two together for the full consumption picture.
+      - id: cpi
+        name: Consumer price index (CPI)
+        note: >
+          Retail sales are nominal. Cross-read with CPI to judge how much of a
+          move is volume and how much is price — in deflationary stretches the
+          real trend is stronger than the headline.
+
+  fiscal_revenue:
+    name: General public budget revenue
+    block: fiscal
+    publisher: Ministry of Finance (MOF)
+    source_line: "Source: Ministry of Finance via akshare"
+    unit: RMB 100 million
+    release: >
+      Monthly, usually in the second half of the following month. January and
+      February are released combined.
+    what_it_measures: >
+      Revenue in the general public budget — mostly tax, plus non-tax income.
+      Because so much of it is tax on corporate profit, VAT and transactions,
+      it doubles as a side-read on the economy: soft revenue points to weak
+      nominal growth and thin corporate profits.
+    how_to_read: >
+      Read by the year-to-date year-on-year rate, which smooths the volatile
+      single-month figure. Weakness is usually nominal-demand and property-market
+      driven; watch it against retail sales and PPI, since a big chunk of the
+      tax base is nominal.
+    caveats: >
+      This is revenue only. Budget expenditure and the pace of bond issuance
+      against the annual quota — the more decision-relevant gauges of fiscal
+      thrust — are separate series (planned). January and February are combined.
+    metric:
+      overview:
+        col: ytd_yoy
+        kind: pct
+        period_label: YTD YoY
+        up_is: good
+        level_col: ytd_value
+        level_kind: trillion
+        spark_col: ytd_yoy
+      views:
+        - label: Year-to-date year-on-year
+          col: ytd_yoy
+          suffix: "%"
+          zero: true
+          note: Cumulative revenue growth since January versus a year earlier.
+        - label: Single-month year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: >
+            Single-month growth, calculated from cumulative MOF figures. Noisier
+            than the year-to-date rate and blank for the combined Jan–Feb month.
+        - label: Year-to-date total
+          col: ytd_value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: Cumulative revenue since January, in RMB trillion.
+      compare:
+        yoy_col: ytd_yoy
+        yoy_is_ytd: true
+        level_col: ytd_value
+    cross_reads:
+      - id: retail_sales
+        name: Retail sales of consumer goods
+        note: >
+          Much of the tax base is nominal consumer and corporate activity. Weak
+          revenue growth usually shows up as soft nominal demand here too.
+      - id: social_financing
+        name: Total social financing
+        note: >
+          Fiscal and credit impulses often move together; read revenue against
+          the flow of financing to gauge the overall policy push.
+
+  fixed_asset_investment:
+    name: Fixed asset investment
+    block: investment
+    publisher: National Bureau of Statistics (NBS)
+    source_line: "Source: National Bureau of Statistics via akshare"
+    unit: RMB 100 million
+    release: >
+      Monthly, around the 15th–18th of the following month. January and
+      February are released combined.
+    what_it_measures: >
+      Spending on fixed assets — factories and machinery, infrastructure, and
+      real estate — by firms, government and households. It is the investment
+      leg of the expenditure framework, and in recent years the swing factor
+      behind it has been the property downturn.
+    how_to_read: >
+      NBS publishes FAI as a year-to-date figure; the single-month year-on-year
+      shown here is derived by the data source from the cumulative series and is
+      noisy, so treat sharp single-month swings with caution. The manufacturing,
+      infrastructure and real-estate split — the part that actually tells you
+      where capital is going — is not in the free feed yet (planned).
+    caveats: >
+      The cumulative year-on-year rate is intentionally not recomputed from the
+      levels: NBS revises the prior-year base, so a locally computed rate would
+      not match the official headline. January and February are combined.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: single-month YoY
+        up_is: good
+        # No published yoy exists for the combined Jan-Feb print (this feed
+        # carries no ytd_yoy), so the tile falls back to the cumulative level.
+        combined_col: ytd_value
+        combined_kind: trillion
+        combined_label: "Jan–Feb cumulative"
+        level_col: ytd_value
+        level_kind: trillion
+        spark_col: yoy
+      views:
+        - label: Single-month year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: >
+            Single-month growth derived by the source from cumulative figures —
+            volatile; read the trend, not one month. Blank for combined Jan–Feb.
+        - label: Year-to-date total
+          col: ytd_value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: Cumulative investment since January, in RMB trillion.
+        - label: Monthly level
+          col: value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: >
+            Source-derived single-month investment in RMB trillion. No value for
+            the combined January–February month.
+      compare:
+        yoy_col: yoy
+        level_col: ytd_value
+    cross_reads:
+      - id: new_loans
+        name: New RMB loans
+        note: >
+          Investment is credit-financed; the flow of new lending leads and
+          confirms turns in capital spending.
+      - id: manufacturing_pmi
+        name: Manufacturing PMI
+        note: >
+          The PMI's forward-looking survey moves ahead of the hard investment
+          data, especially for manufacturing capex.
+
+  manufacturing_pmi:
+    name: Manufacturing PMI
+    block: trade
+    publisher: National Bureau of Statistics (NBS)
+    source_line: "Source: National Bureau of Statistics via akshare"
+    unit: diffusion index (50 = no change)
+    release: >
+      Monthly, on the last day of the reference month — the earliest official
+      read on the economy, ahead of all the hard data.
+    what_it_measures: >
+      A survey of purchasing managers at manufacturers, summarised as a
+      diffusion index: above 50 means more firms reporting expansion than
+      contraction, below 50 the reverse. The non-manufacturing PMI, covering
+      services and construction, is shown alongside for context.
+    how_to_read: >
+      Read as a level against 50, not as a growth rate, and watch the direction
+      of travel month to month. Because it lands before the hard data, it is
+      the first signal of a turn. Two sub-indices would sharpen the read — new
+      export orders (within this manufacturing survey) for trade, and civil
+      engineering activity (within the separate non-manufacturing survey) for
+      infrastructure — but neither is in the free feed (planned).
+    metric:
+      overview:
+        col: value
+        kind: index
+        period_label: index
+        up_is: good
+        spark_col: value
+      views:
+        - label: Manufacturing
+          col: value
+          suffix: ""
+          decimals: 1
+          refline: 50
+          note: >
+            Manufacturing PMI. Above the marked 50 line signals expansion,
+            below it contraction.
+        - label: Non-manufacturing
+          col: nonmfg
+          suffix: ""
+          decimals: 1
+          refline: 50
+          note: >
+            Non-manufacturing PMI (services and construction), for context.
+            Above the marked 50 line signals expansion, below it contraction.
+      compare:
+        level_col: value
+    cross_reads:
+      - id: exports
+        name: Exports
+        note: >
+          The PMI's new-orders and export-orders signal leads customs exports by
+          roughly a month; read the survey as an early warning for the hard data.
+      - id: fixed_asset_investment
+        name: Fixed asset investment
+        note: >
+          Manufacturing sentiment here tends to lead manufacturing capex in the
+          investment data.
+
+  exports:
+    name: Exports
+    block: trade
+    publisher: General Administration of Customs (GACC)
+    source_line: "Source: General Administration of Customs via akshare"
+    unit: USD billion
+    release: >
+      Monthly, in the first half of the following month — among the earliest
+      hard data. GACC's headline release combines January and February, but
+      this feed carries separate values for both months.
+    what_it_measures: >
+      Merchandise exports in US-dollar terms. The clearest monthly read on
+      external demand and China's competitiveness, and — with the trade surplus
+      near record highs — a politically charged one.
+    how_to_read: >
+      Read by the year-on-year rate; the dollar level is highly seasonal.
+      Distortions to watch: Chinese New Year timing — treat the standalone
+      January and February readings with caution and prefer the year-to-date
+      rate for those months — plus front-running ahead of expected tariff
+      changes, and swings in export prices versus volumes.
+    caveats: >
+      US-dollar values converted from the source unit of thousand USD. Unlike
+      NBS activity data, this feed reports January and February separately;
+      their single-month rates are Chinese New Year-distorted, so read early
+      year figures on the year-to-date basis.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: YoY
+        up_is: good
+        level_col: value
+        level_kind: usd_bn
+        spark_col: yoy
+      views:
+        - label: Year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: Change on the same month a year earlier, in USD terms.
+        - label: Year-to-date year-on-year
+          col: ytd_yoy
+          suffix: "%"
+          zero: true
+          note: Cumulative export growth since January versus a year earlier.
+        - label: Monthly level
+          col: value
+          suffix: " bn"
+          decimals: 0
+          note: Monthly exports in USD billion.
+      compare:
+        yoy_col: yoy
+        level_col: value
+    cross_reads:
+      - id: imports
+        name: Imports
+        note: >
+          Read together: the gap between them is the trade balance, and imports
+          carry a domestic-demand signal that exports do not.
+      - id: manufacturing_pmi
+        name: Manufacturing PMI
+        note: >
+          The PMI export-orders signal leads customs exports by about a month.
+
+  imports:
+    name: Imports
+    block: trade
+    publisher: General Administration of Customs (GACC)
+    source_line: "Source: General Administration of Customs via akshare"
+    unit: USD billion
+    release: >
+      Monthly, in the first half of the following month. GACC's headline
+      release combines January and February, but this feed carries separate
+      values for both months.
+    what_it_measures: >
+      Merchandise imports in US-dollar terms. As much a read on domestic demand
+      and the property cycle (via commodities and machinery) as on global prices.
+    how_to_read: >
+      Read by the year-on-year rate. Weak imports often say more about soft
+      domestic demand than about the rest of the world — cross-read with retail
+      sales and investment. Commodity-price swings move the dollar value even
+      when volumes are flat.
+    caveats: >
+      US-dollar values converted from the source unit of thousand USD. Unlike
+      NBS activity data, this feed reports January and February separately;
+      their single-month rates are Chinese New Year-distorted, so read early
+      year figures on the year-to-date basis.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: YoY
+        up_is: good
+        level_col: value
+        level_kind: usd_bn
+        spark_col: yoy
+      views:
+        - label: Year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: Change on the same month a year earlier, in USD terms.
+        - label: Year-to-date year-on-year
+          col: ytd_yoy
+          suffix: "%"
+          zero: true
+          note: Cumulative import growth since January versus a year earlier.
+        - label: Monthly level
+          col: value
+          suffix: " bn"
+          decimals: 0
+          note: Monthly imports in USD billion.
+      compare:
+        yoy_col: yoy
+        level_col: value
+    cross_reads:
+      - id: exports
+        name: Exports
+        note: The two together define the trade balance.
+      - id: retail_sales
+        name: Retail sales of consumer goods
+        note: >
+          Imports of consumer goods and commodities track domestic demand; weak
+          imports and weak retail sales usually tell the same story.
+
+  cpi:
+    name: Consumer price index (CPI)
+    block: crosscutting
+    publisher: National Bureau of Statistics (NBS)
+    source_line: "Source: National Bureau of Statistics via akshare"
+    unit: index (prior-year month = 100)
+    release: >
+      Monthly, around the 9th–10th of the following month. Published for
+      January and February separately.
+    what_it_measures: >
+      The change in prices paid by consumers. In China the recent story is not
+      inflation but its absence: CPI hovering near zero, with core and services
+      prices soft, is the clearest sign of weak demand.
+    how_to_read: >
+      Read by the year-on-year rate. Food — especially pork — and energy make
+      the headline swing, so watch core CPI (ex food and energy) for the demand
+      signal. Rising and falling are not simply good or bad here: near-zero
+      readings flag deflation risk, so direction is shown without a judgement
+      colour.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: YoY
+        up_is: neutral
+        spark_col: yoy
+      views:
+        - label: Year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: Change in consumer prices on the same month a year earlier.
+        - label: Month-on-month
+          col: mom
+          suffix: "%"
+          zero: true
+          note: Change on the previous month — seasonal, useful for turning points.
+        - label: Index level
+          col: value
+          suffix: ""
+          decimals: 1
+          note: Price index with the prior-year month set to 100.
+      compare:
+        yoy_col: yoy
+        level_col: value
+    cross_reads:
+      - id: ppi
+        name: Producer price index (PPI)
+        note: >
+          PPI is factory-gate prices upstream of CPI; when a PPI recovery
+          fails to feed through into consumer prices, it points to demand too
+          weak for firms to pass higher costs on.
+      - id: retail_sales
+        name: Retail sales of consumer goods
+        note: >
+          CPI is the deflator that turns nominal retail sales into a read on
+          real volumes.
+
+  ppi:
+    name: Producer price index (PPI)
+    block: crosscutting
+    publisher: National Bureau of Statistics (NBS)
+    source_line: "Source: National Bureau of Statistics via akshare"
+    unit: index (prior-year month = 100)
+    release: >
+      Monthly, around the 9th–10th of the following month, alongside CPI.
+    what_it_measures: >
+      The change in prices producers receive at the factory gate for industrial
+      goods. A long stretch of negative year-on-year PPI is the sharpest single
+      gauge of China's industrial overcapacity and deflation.
+    how_to_read: >
+      Read by the year-on-year rate. It is sensitive to global commodity prices
+      and to domestic industrial demand; sustained negative readings squeeze
+      corporate margins and, through them, profits and tax revenue. Direction is
+      shown without a judgement colour, since neither sign is unambiguously good.
+    metric:
+      overview:
+        col: yoy
+        kind: pct
+        period_label: YoY
+        up_is: neutral
+        spark_col: yoy
+      views:
+        - label: Year-on-year
+          col: yoy
+          suffix: "%"
+          zero: true
+          note: Change in factory-gate prices on the same month a year earlier.
+        - label: Index level
+          col: value
+          suffix: ""
+          decimals: 1
+          note: Price index with the prior-year month set to 100.
+      compare:
+        yoy_col: yoy
+        level_col: value
+    cross_reads:
+      - id: cpi
+        name: Consumer price index (CPI)
+        note: >
+          PPI leads CPI down the supply chain; the CPI–PPI gap gauges how much
+          pricing power is left in the economy.
+      - id: fiscal_revenue
+        name: General public budget revenue
+        note: >
+          Because so much of the tax base is nominal, PPI deflation feeds
+          directly into weak fiscal revenue.
+
+  new_loans:
+    name: New RMB loans
+    block: crosscutting
+    publisher: People's Bank of China (PBOC)
+    source_line: "Source: People's Bank of China via akshare"
+    unit: RMB 100 million
+    release: >
+      Monthly, usually between the 10th and 15th of the following month, often
+      as a batch with total social financing and money supply.
+    what_it_measures: >
+      New bank lending to the real economy each month. The single largest
+      channel of credit, and a direct read on how much financing is actually
+      reaching firms and households.
+    how_to_read: >
+      Read by the year-to-date year-on-year rate; single-month new lending is
+      extremely seasonal (a huge January, thin holiday months) and can even turn
+      negative on net repayment. The corporate medium-and-long-term breakdown —
+      the cleanest signal of genuine investment demand — is not separable in the
+      free feed, so read this alongside total social financing.
+    metric:
+      overview:
+        col: ytd_yoy
+        kind: pct
+        period_label: YTD YoY
+        up_is: good
+        level_col: value
+        level_kind: trillion
+        spark_col: ytd_yoy
+      views:
+        - label: Year-to-date year-on-year
+          col: ytd_yoy
+          suffix: "%"
+          zero: true
+          note: Cumulative new-lending growth since January versus a year earlier.
+        - label: Monthly new
+          col: value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: >
+            New loans that month in RMB trillion. Very seasonal; can go negative
+            on net repayment.
+        - label: Year-to-date total
+          col: ytd_value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: Cumulative new loans since January, in RMB trillion.
+      compare:
+        yoy_col: ytd_yoy
+        yoy_is_ytd: true
+        level_col: ytd_value
+    cross_reads:
+      - id: social_financing
+        name: Total social financing
+        note: >
+          New RMB loans are the largest component of total social financing;
+          read them together to separate bank credit from bond and shadow
+          financing.
+      - id: money_supply
+        name: Money supply (M1, M2)
+        note: >
+          Lending creates deposits; loan growth and broad money growth are two
+          views of the same credit cycle.
+
+  money_supply:
+    name: Money supply (M1, M2)
+    block: crosscutting
+    publisher: People's Bank of China (PBOC)
+    source_line: "Source: People's Bank of China via akshare"
+    unit: yoy % and RMB 100 million
+    release: >
+      Monthly, usually between the 10th and 15th of the following month.
+      Published for January and February separately.
+    what_it_measures: >
+      Broad money (M2) and narrow money (M1) and how fast they are growing. M1
+      is cash and current deposits — money ready to be spent; M2 adds savings
+      and time deposits.
+    how_to_read: >
+      Watch the gap between M1 and M2 growth. M1 lagging well behind M2 means
+      money is being parked in time deposits rather than deployed — a classic
+      sign of weak confidence, even when overall money growth looks fine.
+      Direction is shown without a judgement colour.
+    metric:
+      overview:
+        col: m2_yoy
+        kind: pct
+        period_label: M2 YoY
+        up_is: neutral
+        spark_col: m2_yoy
+      views:
+        - label: M2 year-on-year
+          col: m2_yoy
+          suffix: "%"
+          zero: true
+          note: Broad money growth on the same month a year earlier.
+        - label: M1 year-on-year
+          col: m1_yoy
+          suffix: "%"
+          zero: true
+          note: Narrow money (cash and current deposits) growth, year-on-year.
+        - label: M2 level
+          col: m2_level
+          suffix: " tn"
+          decimals: 1
+          scale: 10000
+          note: Broad money stock, in RMB trillion.
+      compare:
+        yoy_col: m2_yoy
+        level_col: m2_level
+    cross_reads:
+      - id: social_financing
+        name: Total social financing
+        note: >
+          Money supply and social financing are the two sides of the credit
+          system — the deposits created and the financing extended.
+      - id: cpi
+        name: Consumer price index (CPI)
+        note: >
+          Persistent money growth without inflation, as now, points to weak
+          velocity and demand rather than overheating.
+
+  social_financing:
+    name: Total social financing
+    block: crosscutting
+    publisher: People's Bank of China (PBOC)
+    source_line: "Source: People's Bank of China via akshare"
+    unit: RMB 100 million (monthly increment)
+    release: >
+      Monthly, usually between the 10th and 15th of the following month.
+    what_it_measures: >
+      The broadest official measure of new financing to the real economy in a
+      month — bank loans plus bonds, off-balance-sheet lending and equity. The
+      widest lens on the credit impulse driving (or failing to drive) growth.
+    how_to_read: >
+      This is a flow — new financing added that month — not a stock or a growth
+      rate, so read it against prior months and the same month a year earlier.
+      It is heavily seasonal, with a very large January print, and government
+      bond issuance can swing the total. The stock year-on-year growth rate is
+      not in this feed.
+    metric:
+      overview:
+        col: value
+        kind: trillion
+        period_label: new
+        up_is: good
+        # A raw seasonal flow (huge January print): comparing to the trailing
+        # months would just re-announce the seasonality, so the direction
+        # arrow compares to the same month a year earlier instead.
+        delta_mode: same_month_last_year
+        spark_col: value
+      views:
+        - label: Monthly new financing
+          col: value
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: >
+            New total social financing that month, in RMB trillion. Very
+            seasonal — expect a large January each year.
+        - label: New RMB loans (component)
+          col: rmb_loans
+          suffix: " tn"
+          decimals: 2
+          scale: 10000
+          note: The bank-loan share of total social financing, in RMB trillion.
+      compare:
+        level_col: value
+    cross_reads:
+      - id: new_loans
+        name: New RMB loans
+        note: >
+          Bank loans are the largest slice of social financing; comparing them
+          shows how much of the credit impulse is banks versus bonds and shadow
+          finance.
+      - id: fixed_asset_investment
+        name: Fixed asset investment
+        note: >
+          The credit impulse leads investment; a financing pickup usually shows
+          up in capital spending a few months later.

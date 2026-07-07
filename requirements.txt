@@ -1,0 +1,8 @@
+# Runtime dependencies for the Streamlit app only.
+# The app reads static CSVs from data/ and makes zero network calls,
+# so deployment (e.g. Streamlit Community Cloud) stays lean.
+# Fetching dependencies live in requirements-fetch.txt.
+streamlit>=1.48
+plotly>=5.24
+pandas>=2.2,<3
+PyYAML>=6.0

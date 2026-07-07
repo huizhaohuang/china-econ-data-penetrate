@@ -1,0 +1,19 @@
+{
+  "indicator_id": "money_supply",
+  "source": "People's Bank of China",
+  "source_detail": "PBOC monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_money_supply",
+  "unit": "yoy % (m*_yoy); RMB 100 million (m*_level)",
+  "fetched_at_utc": "2026-07-06T23:23:03Z",
+  "rows": 221,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "m2_yoy",
+    "m1_yoy",
+    "m2_level",
+    "m1_level"
+  ],
+  "notes": "M2 and M1 year-on-year growth (m2_yoy, m1_yoy) and stock levels (m2_level, m1_level). Watch the M1-M2 gap: M1 lagging M2 signals idle liquidity. Published for January and February separately."
+}

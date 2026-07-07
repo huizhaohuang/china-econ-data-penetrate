@@ -1,0 +1,21 @@
+{
+  "indicator_id": "exports",
+  "source": "General Administration of Customs",
+  "source_detail": "GACC monthly release, via akshare (EastMoney mirror)",
+  "akshare_function": "macro_china_hgjck",
+  "unit": "USD billion",
+  "fetched_at_utc": "2026-07-07T12:59:19Z",
+  "rows": 221,
+  "first_period": "2008-01",
+  "latest_period": "2026-05",
+  "columns": [
+    "date",
+    "value",
+    "yoy",
+    "mom",
+    "ytd_value",
+    "ytd_yoy",
+    "jan_feb_combined"
+  ],
+  "notes": "Merchandise exports in USD terms. Read by year-on-year rate. Values converted from the source unit of thousand USD to USD billion. This feed reports January and February separately (GACC's headline release combines them); their single-month rates are Chinese New Year-distorted, so prefer the ytd basis for early-year months."
+}
