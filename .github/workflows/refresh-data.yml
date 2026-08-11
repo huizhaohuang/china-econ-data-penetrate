@@ -46,8 +46,12 @@ jobs:
         run: python -m fetch.run_all
 
       - name: Commit and push refreshed data
+        # Gate on the CSVs, not all of data/: every fetch rewrites the
+        # fetched_at_utc timestamps in the .meta.json sidecars, and committing
+        # those alone would add two junk commits a day to the data audit
+        # trail. When a CSV did change, the metas ride along in the commit.
         run: |
-          if [ -n "$(git status --porcelain -- data/)" ]; then
+          if [ -n "$(git status --porcelain -- 'data/*.csv')" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/
