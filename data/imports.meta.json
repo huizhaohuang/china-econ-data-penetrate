@@ -4,10 +4,10 @@
   "source_detail": "GACC monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_hgjck",
   "unit": "USD billion",
-  "fetched_at_utc": "2026-07-07T12:59:19Z",
-  "rows": 221,
+  "fetched_at_utc": "2026-08-11T16:04:05Z",
+  "rows": 223,
   "first_period": "2008-01",
-  "latest_period": "2026-05",
+  "latest_period": "2026-07",
   "columns": [
     "date",
     "value",

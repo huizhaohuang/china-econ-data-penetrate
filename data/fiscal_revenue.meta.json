@@ -4,10 +4,10 @@
   "source_detail": "MOF monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_czsr",
   "unit": "RMB 100 million",
-  "fetched_at_utc": "2026-07-06T23:22:57Z",
-  "rows": 213,
+  "fetched_at_utc": "2026-08-11T16:03:55Z",
+  "rows": 214,
   "first_period": "2008-01",
-  "latest_period": "2026-05",
+  "latest_period": "2026-06",
   "columns": [
     "date",
     "value",

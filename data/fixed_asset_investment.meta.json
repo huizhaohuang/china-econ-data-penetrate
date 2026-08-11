@@ -4,10 +4,10 @@
   "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_gdzctz",
   "unit": "RMB 100 million",
-  "fetched_at_utc": "2026-07-06T23:22:56Z",
-  "rows": 202,
+  "fetched_at_utc": "2026-08-11T16:22:21Z",
+  "rows": 203,
   "first_period": "2008-02",
-  "latest_period": "2026-05",
+  "latest_period": "2026-06",
   "columns": [
     "date",
     "value",
@@ -17,5 +17,6 @@
     "ytd_yoy",
     "jan_feb_combined"
   ],
-  "notes": "NBS publishes FAI as a year-to-date figure; value and yoy here are the source's single-month derivation and are noisy. ytd_yoy is left blank because NBS revises the prior-year base, so it cannot be reproduced from the cumulative levels. Jan-Feb combined per the usual NBS convention."
+  "notes": "NBS publishes FAI as a year-to-date figure; value and yoy here are the source's single-month derivation and are noisy. ytd_yoy is left blank because NBS revises the prior-year base, so it cannot be reproduced from the cumulative levels. Jan-Feb combined per the usual NBS convention.",
+  "rows_retained_from_prior_csv": 44
 }
