@@ -48,10 +48,10 @@ akshare (official data)          run locally, with retries
 ```
 
 - **`fetch/`** — Python scripts using [akshare](https://github.com/akfamily/akshare),
-  run locally (later optionally via GitHub Actions). Each writes one cleaned CSV
-  per indicator plus a `.meta.json` sidecar (fetch time, source function, row
-  count) so staleness is visible in the app. `fetch/run_all.py` runs them all
-  with per-indicator error isolation.
+  run on a schedule by GitHub Actions (or locally via `make refresh`). Each
+  writes one cleaned CSV per indicator plus a `.meta.json` sidecar (fetch time,
+  source function, row count) so staleness is visible in the app.
+  `fetch/run_all.py` runs them all with per-indicator error isolation.
 - **`data/`** — committed CSVs, the single source of truth. Git history doubles
   as a data audit trail.
 - **`app/`** — a Streamlit + Plotly app that reads only `data/` and `content/`.
@@ -97,6 +97,35 @@ pip install -r requirements-fetch.txt
 python -m fetch.run_all          # all indicators
 python -m fetch.retail_sales     # or one at a time
 ```
+
+### Keeping the deployed site current
+
+The deployed app reads the **committed** CSVs — a refresh is invisible to it
+until the data is pushed. This runs automatically:
+[`.github/workflows/refresh-data.yml`](.github/workflows/refresh-data.yml)
+fetches twice a day (after the Beijing-morning NBS/GACC cluster and the
+afternoon PBoC cluster), commits `data/` when anything changed and pushes,
+which redeploys the site. Failed fetchers don't block the rest: whatever
+succeeded is still published, and the run is marked failed so the gap is
+visible.
+
+The same loop is available manually, wrapped in the Makefile:
+
+```bash
+make refresh    # fetch latest data; ends with a freshness report
+make publish    # commit data/ and push -> the deployed site redeploys
+make update     # both in one go
+```
+
+`make refresh` ends with a per-indicator freshness report that compares each
+CSV against the indicator's release calendar (`release_day` in
+`content/indicators.yaml`), separating "the July print is not out yet" from
+"the upstream feed is behind its publisher" — the akshare mirror sometimes
+lags a release by some days. The same check drives the "behind the release
+calendar" notices in the app. Two safeguards apply on every refresh: a failed
+fetch never overwrites a good CSV, and months the source stops returning are
+retained from the committed CSV rather than silently deleted (EastMoney has
+trimmed history windows before).
 
 ## Layout
 

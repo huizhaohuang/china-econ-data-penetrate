@@ -13,6 +13,7 @@ import streamlit as st
 
 from lib import content as content_lib
 from lib import data as data_lib
+from lib import freshness as freshness_lib
 from lib.cards import indicator_card
 from lib.charts import PLOTLY_CONFIG, line_chart
 from lib.fmt import fmt_day, fmt_month
@@ -58,11 +59,23 @@ def _render_indicator(ind_id: str, spec: dict, content: dict, available: set) ->
     plotted = df.dropna(subset=[view["col"]])
     through = fmt_month(plotted["date"].iloc[-1]) if not plotted.empty else "n/a"
 
+    # A print the release calendar says is public but the data lacks gets a
+    # notice - and the cause matters: a feed lagging its publisher and a
+    # panel nobody refreshed look identical in the data but need different
+    # fixes, so the copy must not blame the feed for a stale fetch.
+    status = freshness_lib.currency_status(spec, meta)
+    stale_note = ""
+    if status and status["behind"]:
+        reason = ("the source feed is behind the release calendar"
+                  if status["cause"] == "feed"
+                  else "the panel's data refresh is overdue")
+        stale_note = f' · Awaiting {fmt_month(status["expected"])} — {reason}'
+
     st.plotly_chart(fig, width="stretch", config=PLOTLY_CONFIG)
     st.markdown(
         f'<div class="cmp-source">{html.escape(spec.get("source_line", ""))} · '
         f'Data through {through} · '
-        f'Fetched {fmt_day(data_lib.fetched_at(meta))}</div>',
+        f'Fetched {fmt_day(data_lib.fetched_at(meta))}{stale_note}</div>',
         unsafe_allow_html=True,
     )
     if view.get("note"):

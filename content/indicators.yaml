@@ -20,6 +20,19 @@
 #
 #   cross_reads: a core feature - which other indicators to read alongside,
 #               and why. Rendered as links once the target is built.
+#
+#   release_day: day of the month FOLLOWING the reference month by which the
+#               print is normally out (late end of the publisher's window);
+#               the PMI, released on the last day of the reference month
+#               itself, uses 1. Drives the freshness check in fetch/run_all.py
+#               and the data-currency notices in the app.
+#   no_january_release: series with no standalone January print (NBS activity
+#               data, customs trade): January and February arrive together
+#               in March.
+#   december_release_day: optional December-print override for publishers
+#               whose full-year release rides an annual press conference:
+#               days counted from Jan 1 of the following year, may exceed 31
+#               (rolls into February).
 
 blocks:
   consumption:
@@ -84,6 +97,8 @@ indicators:
     publisher: National Bureau of Statistics (NBS)
     source_line: "Source: National Bureau of Statistics via akshare"
     unit: RMB 100 million, nominal
+    release_day: 18
+    no_january_release: true
     release: >
       Monthly, around the 15th–18th of the following month, released alongside
       industrial output and fixed asset investment. January and February are
@@ -168,6 +183,11 @@ indicators:
     publisher: Ministry of Finance (MOF)
     source_line: "Source: Ministry of Finance via akshare"
     unit: RMB 100 million
+    release_day: 26
+    # The December (full-year) print rides MOF's annual press conference and
+    # has landed as late as Feb 1: 32 = day 32 counted from Jan 1.
+    december_release_day: 32
+    no_january_release: true
     release: >
       Monthly, usually in the second half of the following month. January and
       February are released combined.
@@ -235,6 +255,8 @@ indicators:
     publisher: National Bureau of Statistics (NBS)
     source_line: "Source: National Bureau of Statistics via akshare"
     unit: RMB 100 million
+    release_day: 18
+    no_january_release: true
     release: >
       Monthly, around the 15th–18th of the following month. January and
       February are released combined.
@@ -310,6 +332,7 @@ indicators:
     publisher: National Bureau of Statistics (NBS)
     source_line: "Source: National Bureau of Statistics via akshare"
     unit: diffusion index (50 = no change)
+    release_day: 1
     release: >
       Monthly, on the last day of the reference month — the earliest official
       read on the economy, ahead of all the hard data.
@@ -369,6 +392,10 @@ indicators:
     publisher: General Administration of Customs (GACC)
     source_line: "Source: General Administration of Customs via akshare"
     unit: USD billion
+    # 14, not the usual ~7th-9th: quarter-end and December prints ride GACC's
+    # press conferences, which land around the 12th-14th.
+    release_day: 14
+    no_january_release: true
     release: >
       Monthly, in the first half of the following month — among the earliest
       hard data. GACC's headline release combines January and February, but
@@ -433,6 +460,10 @@ indicators:
     publisher: General Administration of Customs (GACC)
     source_line: "Source: General Administration of Customs via akshare"
     unit: USD billion
+    # 14, not the usual ~7th-9th: quarter-end and December prints ride GACC's
+    # press conferences, which land around the 12th-14th.
+    release_day: 14
+    no_january_release: true
     release: >
       Monthly, in the first half of the following month. GACC's headline
       release combines January and February, but this feed carries separate
@@ -494,6 +525,7 @@ indicators:
     publisher: National Bureau of Statistics (NBS)
     source_line: "Source: National Bureau of Statistics via akshare"
     unit: index (prior-year month = 100)
+    release_day: 11
     release: >
       Monthly, around the 9th–10th of the following month. Published for
       January and February separately.
@@ -552,6 +584,7 @@ indicators:
     publisher: National Bureau of Statistics (NBS)
     source_line: "Source: National Bureau of Statistics via akshare"
     unit: index (prior-year month = 100)
+    release_day: 11
     release: >
       Monthly, around the 9th–10th of the following month, alongside CPI.
     what_it_measures: >
@@ -602,6 +635,7 @@ indicators:
     publisher: People's Bank of China (PBOC)
     source_line: "Source: People's Bank of China via akshare"
     unit: RMB 100 million
+    release_day: 16
     release: >
       Monthly, usually between the 10th and 15th of the following month, often
       as a batch with total social financing and money supply.
@@ -667,6 +701,7 @@ indicators:
     publisher: People's Bank of China (PBOC)
     source_line: "Source: People's Bank of China via akshare"
     unit: yoy % and RMB 100 million
+    release_day: 16
     release: >
       Monthly, usually between the 10th and 15th of the following month.
       Published for January and February separately.
@@ -724,6 +759,7 @@ indicators:
     publisher: People's Bank of China (PBOC)
     source_line: "Source: People's Bank of China via akshare"
     unit: RMB 100 million (monthly increment)
+    release_day: 16
     release: >
       Monthly, usually between the 10th and 15th of the following month.
     what_it_measures: >

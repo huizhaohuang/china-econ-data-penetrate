@@ -104,13 +104,51 @@ def normalize_nbs_monthly(raw: pd.DataFrame, *, month_col: str, value_col: str,
     return out
 
 
+def merge_with_existing(df: pd.DataFrame, csv_path: Path) -> tuple[pd.DataFrame, int, int]:
+    """Merge a freshly fetched frame with the committed CSV, if one exists.
+
+    Sources occasionally shorten the history window they return (EastMoney
+    trimmed FAI from 2008 to 2012 in Aug 2026, and recomputes yoy within
+    the window, blanking its first year); a plain overwrite would then
+    silently degrade committed data. Fetched values win, so revisions
+    propagate; months the source no longer returns, and cells it now leaves
+    blank, are retained from the existing CSV. Returns the merged frame,
+    the count of retained months and the count of backfilled cells.
+    """
+    if not csv_path.exists():
+        return df, 0, 0
+    prev = pd.read_csv(csv_path, dtype={"date": str}).set_index("date")
+    prev = prev.reindex(columns=[c for c in df.columns if c != "date"])
+    new = df.set_index("date")
+
+    overlap = new.index.intersection(prev.index)
+    # Cells the fetched frame blanks BY DESIGN must not be backfilled: a
+    # jan_feb_combined row's value/yoy/mom are intentionally empty, and
+    # refilling them would commit a flagged-combined row carrying a
+    # single-month value. Mask them out of prev before merging.
+    if "jan_feb_combined" in new.columns:
+        flagged = overlap[new.loc[overlap, "jan_feb_combined"].astype(bool)]
+        cols = [c for c in ("value", "yoy", "mom") if c in prev.columns]
+        prev.loc[flagged, cols] = pd.NA
+
+    n_retained = len(prev.index.difference(new.index))
+    n_backfilled = int((new.loc[overlap].isna() & prev.loc[overlap].notna())
+                       .to_numpy().sum())
+    if not n_retained and not n_backfilled:
+        return df, 0, 0
+    merged = new.combine_first(prev).reset_index()
+    return merged[df.columns.tolist()], n_retained, n_backfilled
+
+
 def write_indicator(df: pd.DataFrame, indicator_id: str, *, source: str,
                     source_detail: str, akshare_function: str, unit: str,
                     notes: str = "") -> None:
     """Write the indicator CSV and its meta sidecar.
 
     Expects a ``date`` column of ISO first-of-month strings; sorts ascending
-    and validates uniqueness before writing.
+    and validates uniqueness before writing. Months present in the committed
+    CSV but absent from the fetched frame are retained rather than deleted
+    (see merge_with_existing).
     """
     if "date" not in df.columns:
         raise ValueError("indicator frame must have a 'date' column")
@@ -118,10 +156,15 @@ def write_indicator(df: pd.DataFrame, indicator_id: str, *, source: str,
         dupes = df.loc[df["date"].duplicated(), "date"].tolist()
         raise ValueError(f"duplicate months in {indicator_id}: {dupes}")
 
-    df = df.sort_values("date").reset_index(drop=True)
-
     DATA_DIR.mkdir(exist_ok=True)
     csv_path = DATA_DIR / f"{indicator_id}.csv"
+    df, n_retained, n_backfilled = merge_with_existing(df, csv_path)
+    if n_retained or n_backfilled:
+        log(f"{indicator_id}: source no longer returns {n_retained} committed "
+            f"month(s) / {n_backfilled} cell(s); retaining them from the "
+            f"existing CSV")
+
+    df = df.sort_values("date").reset_index(drop=True)
     df.to_csv(csv_path, index=False)
 
     meta = {
@@ -137,6 +180,8 @@ def write_indicator(df: pd.DataFrame, indicator_id: str, *, source: str,
         "columns": list(df.columns),
         "notes": notes,
     }
+    if n_retained:
+        meta["rows_retained_from_prior_csv"] = n_retained
     meta_path = DATA_DIR / f"{indicator_id}.meta.json"
     meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n")
 

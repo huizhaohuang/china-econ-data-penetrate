@@ -9,6 +9,7 @@ import streamlit as st
 
 from lib import content as content_lib
 from lib import data as data_lib
+from lib import freshness as freshness_lib
 from lib.cards import BLOCK_PAGES, overview_tile, planned_tile
 from lib.fmt import fmt_month
 
@@ -23,22 +24,34 @@ st.markdown(
 content = content_lib.load_content()
 available = data_lib.available_indicators()
 
-# Dateline: which indicators were refreshed in the past week. Only carded
+# Dateline: which indicators were refreshed in the past week, and which are
+# behind their publisher's release calendar (a print the calendar says is
+# public is missing - upstream feed lag, or a stale local fetch). Only carded
 # indicators appear - an orphan CSV without a yaml entry stays out of copy.
-fresh = []
+fresh, behind = [], []
 for ind_id in sorted(available):
     spec = content.get("indicators", {}).get(ind_id)
     if not spec:
         continue
     df, meta = data_lib.load_indicator(ind_id)
+    if df is None:
+        continue
     days = data_lib.days_since_fetch(meta)
-    if df is not None and days is not None and days <= 7:
+    if days is not None and days <= 7:
         fresh.append(f"{spec['name']} "
                      f"(data through {fmt_month(df['date'].iloc[-1])})")
+    status = freshness_lib.currency_status(spec, meta)
+    if status and status["behind"]:
+        reason = ("upstream feed lag" if status["cause"] == "feed"
+                  else "data refresh overdue")
+        behind.append(f"{spec['name']} (data through {fmt_month(status['latest'])}; "
+                      f"{fmt_month(status['expected'])} is due — {reason})")
 if fresh:
     st.caption("Updated in the past 7 days: " + "; ".join(fresh) + ".")
 else:
     st.caption("No indicator updates in the past 7 days.")
+if behind:
+    st.caption("Behind the release calendar: " + "; ".join(behind) + ".")
 
 for block_id, block in content_lib.ordered_blocks(content):
     st.divider()
