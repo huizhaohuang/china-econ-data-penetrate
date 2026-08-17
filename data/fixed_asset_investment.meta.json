@@ -4,10 +4,10 @@
   "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_gdzctz",
   "unit": "RMB 100 million",
-  "fetched_at_utc": "2026-08-14T11:08:05Z",
-  "rows": 203,
+  "fetched_at_utc": "2026-08-17T10:47:48Z",
+  "rows": 204,
   "first_period": "2008-02",
-  "latest_period": "2026-06",
+  "latest_period": "2026-07",
   "columns": [
     "date",
     "value",
