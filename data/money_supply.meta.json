@@ -4,7 +4,7 @@
   "source_detail": "PBOC monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_money_supply",
   "unit": "yoy % (m*_yoy); RMB 100 million (m*_level)",
-  "fetched_at_utc": "2026-08-18T03:14:33Z",
+  "fetched_at_utc": "2026-08-19T10:45:26Z",
   "rows": 223,
   "first_period": "2008-01",
   "latest_period": "2026-07",
