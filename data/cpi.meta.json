@@ -4,10 +4,10 @@
   "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_cpi",
   "unit": "index (prior-year month = 100)",
-  "fetched_at_utc": "2026-09-08T07:20:00Z",
-  "rows": 223,
+  "fetched_at_utc": "2026-09-09T07:28:49Z",
+  "rows": 224,
   "first_period": "2008-01",
-  "latest_period": "2026-07",
+  "latest_period": "2026-08",
   "columns": [
     "date",
     "value",
