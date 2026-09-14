@@ -4,10 +4,10 @@
   "source_detail": "PBOC monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_new_financial_credit",
   "unit": "RMB 100 million",
-  "fetched_at_utc": "2026-09-09T07:28:48Z",
-  "rows": 223,
+  "fetched_at_utc": "2026-09-14T16:21:57Z",
+  "rows": 224,
   "first_period": "2008-01",
-  "latest_period": "2026-07",
+  "latest_period": "2026-08",
   "columns": [
     "date",
     "value",
