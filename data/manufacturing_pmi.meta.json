@@ -4,10 +4,10 @@
   "source_detail": "NBS monthly release, via akshare (EastMoney mirror)",
   "akshare_function": "macro_china_pmi",
   "unit": "diffusion index (50 = no change)",
-  "fetched_at_utc": "2026-10-23T15:03:02Z",
-  "rows": 225,
+  "fetched_at_utc": "2026-10-31T08:36:06Z",
+  "rows": 226,
   "first_period": "2008-01",
-  "latest_period": "2026-09",
+  "latest_period": "2026-10",
   "columns": [
     "date",
     "value",
